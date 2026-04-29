@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Four Wheeler Parking</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .direction-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .dir-btn {
+            padding: 12px 25px;
+            border: 2px solid #4ECDC4;
+            background-color: white;
+            color: #4ECDC4;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+        .dir-btn:hover {
+            background-color: #4ECDC4;
+            color: white;
+        }
+        .dir-btn.active {
+            background-color: #4ECDC4;
+            color: white;
+            border-color: #45B7AA;
+        }
+        .direction-label {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #ecf0f1;
+            border-radius: 5px;
+        }
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .stat-box {
+            padding: 12px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 16px;
+            width: 30%;
+        }
+        .total {
+            background-color: #3498db;
+            color: white;
+        }
+        .free {
+            background-color: #2ecc71;
+            color: white;
+        }
+        .occupied {
+            background-color: #e74c3c;
+            color: white;
+        }
+        .slots-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .slot {
+            width: 90px;
+            height: 90px;
+            margin: 0 auto;
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .slot-free {
+            background-color: #2ecc71;
+        }
+        .slot-free:hover {
+            background-color: #27ae60;
+            transform: scale(1.1);
+        }
+        .slot-occupied {
+            background-color: #e74c3c;
+        }
+        .slot-occupied:hover {
+            opacity: 0.8;
+        }
+        .button-container {
+            text-align: center;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+        .book-btn {
+            background-color: #3498db;
+            color: white;
+        }
+        .book-btn:hover {
+            background-color: #2980b9;
+        }
+        .back-btn {
+            background-color: #95a5a6;
+            color: white;
+        }
+        .back-btn:hover {
+            background-color: #7f8c8d;
+        }
+        .message {
+            text-align: center;
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚗 Four Wheeler Parking</h1>
+        
+        <div class="direction-buttons">
+            <button class="dir-btn active" onclick="loadDirection('right')">➡️ RIGHT</button>
+            <button class="dir-btn" onclick="loadDirection('left')">⬅️ LEFT</button>
+            <button class="dir-btn" onclick="loadDirection('straight')">⬆️ STRAIGHT</button>
+        </div>
+
+        <div class="direction-label">Current Direction: <span id="currentDir">RIGHT</span></div>
+
+        <div class="stats">
+            <div class="stat-box total">Total: <span id="totalSlots">16</span></div>
+            <div class="stat-box free">Free: <span id="freeSlots">9</span></div>
+            <div class="stat-box occupied">Occupied: <span id="occupiedSlots">7</span></div>
+        </div>
+
+        <div class="slots-grid" id="slotsGrid"></div>
+
+        <div class="button-container">
+            <button class="book-btn" onclick="bookSlot()">📌 Book Selected Slot</button>
+            <button class="back-btn" onclick="goBack()">← Back</button>
+        </div>
+
+        <div id="message"></div>
+    </div>
+
+    <script>
+        let selectedSlot = null;
+        let currentDirection = 'right';
+
+        // Different slot configurations for each direction
+        const slotData = {
+            right: [
+                { id: 1, status: 'free' },
+                { id: 2, status: 'occupied' },
+                { id: 3, status: 'free' },
+                { id: 4, status: 'occupied' },
+                { id: 5, status: 'free' },
+                { id: 6, status: 'free' },
+                { id: 7, status: 'occupied' },
+                { id: 8, status: 'free' },
+                { id: 9, status: 'occupied' },
+                { id: 10, status: 'free' },
+                { id: 11, status: 'free' },
+                { id: 12, status: 'occupied' },
+                { id: 13, status: 'occupied' },
+                { id: 14, status: 'free' },
+                { id: 15, status: 'occupied' },
+                { id: 16, status: 'free' }
+            ],
+            left: [
+                { id: 1, status: 'free' },
+                { id: 2, status: 'free' },
+                { id: 3, status: 'occupied' },
+                { id: 4, status: 'free' },
+                { id: 5, status: 'occupied' },
+                { id: 6, status: 'free' },
+                { id: 7, status: 'free' },
+                { id: 8, status: 'occupied' },
+                { id: 9, status: 'occupied' },
+                { id: 10, status: 'free' },
+                { id: 11, status: 'occupied' },
+                { id: 12, status: 'free' },
+                { id: 13, status: 'free' },
+                { id: 14, status: 'occupied' },
+                { id: 15, status: 'free' },
+                { id: 16, status: 'occupied' }
+            ],
+            straight: [
+                { id: 1, status: 'occupied' },
+                { id: 2, status: 'free' },
+                { id: 3, status: 'free' },
+                { id: 4, status: 'free' },
+                { id: 5, status: 'occupied' },
+                { id: 6, status: 'occupied' },
+                { id: 7, status: 'free' },
+                { id: 8, status: 'free' },
+                { id: 9, status: 'free' },
+                { id: 10, status: 'occupied' },
+                { id: 11, status: 'free' },
+                { id: 12, status: 'occupied' },
+                { id: 13, status: 'free' },
+                { id: 14, status: 'free' },
+                { id: 15, status: 'occupied' },
+                { id: 16, status: 'free' }
+            ]
+        };
+
+        function loadDirection(direction) {
+            currentDirection = direction;
+            selectedSlot = null;
+
+            // Update button styling
+            document.querySelectorAll('.dir-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Update direction label
+            const dirLabels = {
+                'right': 'RIGHT ➡️',
+                'left': 'LEFT ⬅️',
+                'straight': 'STRAIGHT ⬆️'
+            };
+            document.getElementById('currentDir').textContent = dirLabels[direction];
+
+            // Reload slots for new direction
+            initializeSlots();
+            showMessage('✅ Direction changed to ' + dirLabels[direction], 'success');
+        }
+
+        function initializeSlots() {
+            const grid = document.getElementById('slotsGrid');
+            grid.innerHTML = '';
+            
+            const slots = slotData[currentDirection];
+            
+            slots.forEach(slot => {
+                const slotDiv = document.createElement('div');
+                slotDiv.className = `slot slot-${slot.status}`;
+                slotDiv.textContent = slot.id;
+                slotDiv.onclick = () => selectSlot(slot.id, slot.status);
+                grid.appendChild(slotDiv);
+            });
+            
+            updateStats();
+        }
+
+        function selectSlot(id, status) {
+            if(status === 'occupied') {
+                showMessage('❌ This slot is already occupied!', 'error');
+                return;
+            }
+            
+            selectedSlot = id;
+            
+            // Remove previous selection highlight
+            document.querySelectorAll('.slot').forEach(s => {
+                s.style.border = 'none';
+            });
+            
+            // Highlight selected slot
+            event.target.style.border = '3px solid yellow';
+            showMessage(`✅ Slot ${id} selected in ${currentDirection.toUpperCase()} direction`, 'success');
+        }
+
+        function bookSlot() {
+            if(selectedSlot === null) {
+                showMessage('❌ Please select a slot first!', 'error');
+                return;
+            }
+            
+            const slots = slotData[currentDirection];
+            const slot = slots.find(s => s.id === selectedSlot);
+            slot.status = 'occupied';
+            initializeSlots();
+            showMessage(`✅ Slot ${selectedSlot} booked successfully in ${currentDirection.toUpperCase()} direction!`, 'success');
+            selectedSlot = null;
+        }
+
+        function updateStats() {
+            const slots = slotData[currentDirection];
+            const total = slots.length;
+            const free = slots.filter(s => s.status === 'free').length;
+            const occupied = slots.filter(s => s.status === 'occupied').length;
+            
+            document.getElementById('totalSlots').textContent = total;
+            document.getElementById('freeSlots').textContent = free;
+            document.getElementById('occupiedSlots').textContent = occupied;
+        }
+
+        function showMessage(text, type) {
+            const msgDiv = document.getElementById('message');
+            msgDiv.textContent = text;
+            msgDiv.className = `message ${type}`;
+        }
+
+        function goBack() {
+            window.location.href = 'dashboard.html';
+        }
+
+        // Initialize on page load
+        initializeSlots();
+    </script>
+</body>
+</html>
