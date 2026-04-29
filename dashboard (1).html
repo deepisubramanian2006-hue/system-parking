@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Parking System - Dashboard</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .dashboard {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .button-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+        .btn {
+            padding: 20px 40px;
+            font-size: 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            color: white;
+            transition: 0.3s;
+        }
+        .btn-two-wheeler {
+            background-color: #FF6B6B;
+        }
+        .btn-two-wheeler:hover {
+            background-color: #FF5252;
+            transform: scale(1.05);
+        }
+        .btn-four-wheeler {
+            background-color: #4ECDC4;
+        }
+        .btn-four-wheeler:hover {
+            background-color: #45B7AA;
+            transform: scale(1.05);
+        }
+        .logout-btn {
+            margin-top: 30px;
+            padding: 10px 20px;
+            background-color: #999;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .logout-btn:hover {
+            background-color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <h1>🅿️ Select Vehicle Type</h1>
+        <div class="button-container">
+            <a href="two-wheeler.html" class="btn btn-two-wheeler">🏍️ Two Wheeler</a>
+            <a href="four-wheeler.html" class="btn btn-four-wheeler">🚗 Four Wheeler</a>
+        </div>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <script>
+        function logout() {
+            window.location.href = "login.html";
+        }
+    </script>
+</body>
+</html>
